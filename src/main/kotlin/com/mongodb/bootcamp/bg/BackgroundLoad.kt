@@ -78,6 +78,12 @@ fun main(args: Array<String>) {
             sample.drop()
             hourly.drop()
             daily.drop()
+
+            if (conf["createIndex"] as Boolean) {
+                sample.createIndex(and(eq("server", 1), eq("timestamp", 1)))
+                hourly.createIndex(and(eq("server", 1), eq("hour", 1)))
+                daily.createIndex(and(eq("server", 1), eq("day", 1)))
+            }
         }
 
         val days = conf["days"] as Int

@@ -91,8 +91,9 @@ fun main(args: Array<String>) {
 
         // die after x seconds
         timer(initialDelay = (conf["duration"] as Int).toLong() * 1000, period = 10000, action = {
-            /*writeLatencyWriter.close()
-            readLatencyWriter.close()*/
+            writeLatencyWriter.close()
+            readLatencyWriter.close()
+            Thread.sleep(500)
             exitProcess(0)
         } )
         timer(period = 1000, action = {

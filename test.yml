@@ -1,0 +1,36 @@
+sample:
+  read: 0
+  write: 0
+  readDelay: 10
+  writeStop: 20
+  exhaustCursor: false
+
+hourly:
+  read: 0
+  write: 0
+  readDelay: 10
+  writeStop: 20
+  exhaustCursor: true
+  collision: false
+
+daily:
+  read: 100
+  write: 50
+  readDelay: 10
+  writeStop: 120
+  exhaustCursor: false
+  collision: false
+
+writeConcern:
+  majority: true
+  journal: true
+readConcernMajority: false
+secondary: true
+duration: 120
+seed: ec2-54-171-212-215.eu-west-1.compute.amazonaws.com:27017,ec2-54-171-138-164.eu-west-1.compute.amazonaws.com,ec2-54-171-243-43.eu-west-1.compute.amazonaws.com
+database: timeSeries
+days: 15
+servers: 500
+drop: true
+description: "secondary load"
+#description: "w:majority / j:true / rc enabled / 50 writers, 0 readers, loaded secondary"

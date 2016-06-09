@@ -1,0 +1,6 @@
+*.tsv
+build/
+runtime/
+.idea
+.gradle
+*.tar.gz

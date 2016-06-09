@@ -36,8 +36,8 @@ fun main(args: Array<String>) {
         val description = conf["description"]
 
         if (description != null) {
-            writeLatencyWriter.write("# \"${description}\"\n")
-            readLatencyWriter.write("# \"${description}\"\n")
+            writeLatencyWriter.write("# \"$description\"\n")
+            readLatencyWriter.write("# \"$description\"\n")
         }
 
         val secondary = conf["secondary"] as Boolean
@@ -57,7 +57,7 @@ fun main(args: Array<String>) {
         val readConcern = if (conf["readConcernMajority"] as Boolean) ReadConcern.MAJORITY else ReadConcern.LOCAL
 
         val seeds = (conf["seed"] as String).split(",").map { s -> ServerAddress(s) }
-        var mongoClient = MongoClient(seeds, MongoClientOptions.builder().
+        val mongoClient = MongoClient(seeds, MongoClientOptions.builder().
                 readPreference(readPreference).
                 writeConcern(wc).
                 readConcern(readConcern).
@@ -156,7 +156,7 @@ private fun runSample(endOfTime: LocalDate, config: Map<*,*>, random: Random, co
 
                 while (true) {
                     val server = random.nextInt(servers) + 1
-                    var cursor = collection.find(and(eq("server", "server$server"), gte("timestamp", from), lte("timestamp", to))).batchSize(10000).projection(eq("load", 1))
+                    val cursor = collection.find(and(eq("server", "server$server"), gte("timestamp", from), lte("timestamp", to))).batchSize(10000).projection(eq("load", 1))
                     var x = 0
                     if (config["exhaustCursor"] == null || config["exhaustCursor"] as Boolean) {
                         cursor.forEach({ x++ })
@@ -187,7 +187,7 @@ private fun runHourly(endOfTime: LocalDate, config: Map<*,*>, random: Random, co
                 println("hourly reader $i starting")
                 while (true) {
                     val server = random.nextInt(servers) + 1
-                    var cursor = collection.find(and(eq("server", "server$server"), gte("hour", from), lte("hour", to))).batchSize(10000)
+                    val cursor = collection.find(and(eq("server", "server$server"), gte("hour", from), lte("hour", to))).batchSize(10000)
                     var x = 0
                     if (config["exhaustCursor"] == null || config["exhaustCursor"] as Boolean) {
                         cursor.forEach({ x++ })
@@ -260,7 +260,7 @@ private fun runDaily(endOfTime: LocalDate, config: Map<*,*>, random: Random, col
                 while (true) {
                     val server = random.nextInt(servers) + 1
                     val tStart = System.currentTimeMillis()
-                    var cursor = collection.find(and(eq("server", "server$server"), gte("hour", from), lte("hour", to))).batchSize(10000)
+                    val cursor = collection.find(and(eq("server", "server$server"), gte("hour", from), lte("hour", to))).batchSize(10000)
                     var x = 0
                     if (config["exhaustCursor"] == null || config["exhaustCursor"] as Boolean) {
                         cursor.forEach({ x++ })

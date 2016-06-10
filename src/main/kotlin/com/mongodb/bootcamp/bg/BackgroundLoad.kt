@@ -75,16 +75,16 @@ fun main(args: Array<String>) {
         var daily = db.getCollection(dailyName)
 
         if (conf["drop"] as Boolean) {
-            /*sample.drop()
-            hourly.drop()*/
+            sample.drop()
+            hourly.drop()
             daily.drop()
 
             db.createCollection(dailyName)
             daily = db.getCollection(dailyName)
 
             if (conf["createIndex"] as Boolean) {
-                /*sample.createIndex(and(eq("server", 1), eq("timestamp", 1)))
-                hourly.createIndex(and(eq("server", 1), eq("hour", 1)))*/
+                sample.createIndex(and(eq("server", 1), eq("timestamp", 1)))
+                hourly.createIndex(and(eq("server", 1), eq("hour", 1)))
                 daily.createIndex(and(eq("server", 1), eq("day", 1)))
             }
         }
@@ -94,9 +94,9 @@ fun main(args: Array<String>) {
 
         // die after x seconds
         timer(initialDelay = (conf["duration"] as Int).toLong() * 1000, period = 10000, action = {
+            Thread.sleep(5000)
             writeLatencyWriter.close()
             readLatencyWriter.close()
-            Thread.sleep(500)
             exitProcess(0)
         } )
         timer(period = 1000, action = {
@@ -115,8 +115,8 @@ fun main(args: Array<String>) {
         Thread.sleep(1000)
 
         val sampleConfig = conf["sample"] as Map<*, *>
-        /*runSample(endOfTime, sampleConfig, random, sample, days, servers, secondary)
-        runHourly(endOfTime, conf["hourly"] as Map<*,*>, random, hourly, days, servers, secondary)*/
+        runSample(endOfTime, sampleConfig, random, sample, days, servers, secondary)
+        runHourly(endOfTime, conf["hourly"] as Map<*,*>, random, hourly, days, servers, secondary)
         runDaily(endOfTime, conf["daily"] as Map<*,*>, random, daily, days, servers, secondary)
     }
 }

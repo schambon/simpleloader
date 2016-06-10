@@ -140,10 +140,13 @@ private fun runSample(endOfTime: LocalDate, config: Map<*,*>, random: Random, co
                 while(Instant.now().isBefore(end)) {
                     val server = random.nextInt(servers) + 1
                     val ts = Date.from(endOfTime.minusDays(random.nextInt(days).toLong()).atStartOfDay(ZoneId.systemDefault()).withHour(random.nextInt(24)).withMinute(random.nextInt(60)).toInstant())
+                    val tStart = System.currentTimeMillis()
                     collection.insertOne(Document("server", "server$server")
                             .append("load", random.nextInt(101))
                             .append("timestamp", ts)
                     )
+                    val tEnd = System.currentTimeMillis()
+                    writeLatencyWriter.write("$tEnd\t${tEnd - tStart}\n")
                 }
 
                 println("sample writer $i winding down")
@@ -159,6 +162,7 @@ private fun runSample(endOfTime: LocalDate, config: Map<*,*>, random: Random, co
 
                 while (true) {
                     val server = random.nextInt(servers) + 1
+                    val tStart = System.currentTimeMillis()
                     val cursor = collection.find(and(eq("server", "server$server"), gte("timestamp", from), lte("timestamp", to))).batchSize(10000).projection(eq("load", 1))
                     var x = 0
                     if (config["exhaustCursor"] == null || config["exhaustCursor"] as Boolean) {
@@ -166,6 +170,8 @@ private fun runSample(endOfTime: LocalDate, config: Map<*,*>, random: Random, co
                     } else {
                         cursor.first()
                     }
+                    val tEnd = System.currentTimeMillis()
+                    readLatencyWriter.write("$tEnd\t${tEnd - tStart}\n")
                 }
             }
         }
@@ -190,6 +196,7 @@ private fun runHourly(endOfTime: LocalDate, config: Map<*,*>, random: Random, co
                 println("hourly reader $i starting")
                 while (true) {
                     val server = random.nextInt(servers) + 1
+                    val tStart = System.currentTimeMillis()
                     val cursor = collection.find(and(eq("server", "server$server"), gte("hour", from), lte("hour", to))).batchSize(10000)
                     var x = 0
                     if (config["exhaustCursor"] == null || config["exhaustCursor"] as Boolean) {
@@ -197,6 +204,8 @@ private fun runHourly(endOfTime: LocalDate, config: Map<*,*>, random: Random, co
                     } else {
                         cursor.first()
                     }
+                    val tEnd = System.currentTimeMillis()
+                    readLatencyWriter.write("$tEnd\t${tEnd - tStart}\n")
                 }
             }
         }
@@ -237,11 +246,14 @@ private fun runHourly(endOfTime: LocalDate, config: Map<*,*>, random: Random, co
 }
 
 private fun doHourlyUpdate(collection: MongoCollection<Document>, random: Random, server: Int, ts: Date?) {
+    val tStart = System.currentTimeMillis()
     collection.updateOne(
             and(eq("server", "server$server"), eq("hour", ts)),
             and(inc("load_count", 1), inc("load_sum", random.nextInt(101))),
             UpdateOptions().upsert(true)
     )
+    val tEnd = System.currentTimeMillis()
+    writeLatencyWriter.write("$tEnd\t${tEnd - tStart}\n")
 }
 
 private fun runDaily(endOfTime: LocalDate, config: Map<*,*>, random: Random, collection: MongoCollection<Document>, days: Int, servers: Int, secondary: Boolean) {

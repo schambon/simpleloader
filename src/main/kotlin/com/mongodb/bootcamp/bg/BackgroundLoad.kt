@@ -57,7 +57,12 @@ fun main(args: Array<String>) {
         val readConcern = if (conf["readConcernMajority"] as Boolean) ReadConcern.MAJORITY else ReadConcern.LOCAL
 
         val seeds = (conf["seed"] as String).split(",").map { s -> ServerAddress(s) }
-        val mongoClient = MongoClient(seeds, MongoClientOptions.builder().
+
+        val credentials = if (conf.containsKey("login"))
+            listOf(MongoCredential.createScramSha1Credential(conf["login"] as String, conf["authSource"] as String, (conf["password"] as String).toCharArray()))
+        else emptyList<MongoCredential>()
+
+        val mongoClient = MongoClient(seeds, credentials, MongoClientOptions.builder().
                 readPreference(readPreference).
                 writeConcern(wc).
                 readConcern(readConcern).

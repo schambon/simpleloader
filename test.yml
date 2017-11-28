@@ -28,6 +28,10 @@ readConcernMajority: false
 secondary: false
 duration: 120
 seed: ec2-54-171-212-215.eu-west-1.compute.amazonaws.com:27017,ec2-54-171-138-164.eu-west-1.compute.amazonaws.com,ec2-54-171-243-43.eu-west-1.compute.amazonaws.com
+# uncomment and fill in login, authSource and password to run with auth (SCRAM-SHA1 only for now)
+#login: test
+#authSource: admin
+#password: testpwd
 database: timeSeries
 days: 15
 servers: 500
